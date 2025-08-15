@@ -1,0 +1,100 @@
+/* src/components/PlantsList.css */
+
+.plants-list-container {
+    padding: 20px;
+    
+    /* Thêm padding top để nội dung không bị che bởi header */
+    padding-top: 50px; 
+    
+    /* Thêm margin left để nội dung không bị che bởi sidebar */
+    margin-left: 300px;
+}
+
+.plants-section {
+    margin-bottom: 40px;
+}
+
+.plants-section h3 {
+    text-align: left; /* Thay đổi từ center sang left */
+    font-size: 24px;
+    color: #2e7d32;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #a5d6a7;
+    padding-bottom: 10px;
+}
+
+.plants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.plant-card {
+    height: 150px;
+    background-color: #e8f5e9;
+    border: 1px solid #2e7d32;
+    border-radius: 8px;
+    padding: 0;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.plant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.plant-image-background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    filter: brightness(0.8); /* Tăng độ sáng của ảnh lên 80% */
+}
+
+.plant-name-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3); /* Giảm độ mờ của lớp nền */
+    color: white;
+    font-weight: bold;
+    font-size: 1em;
+    text-align: center;
+    z-index: 2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.add-plant-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    /* Bỏ kích thước cố định để nút tự co giãn */
+    padding: 15px 25px; /* Thêm padding để nút có kích thước hợp lý */
+    border-radius: 30px; /* Bo tròn nút để có hình dạng oval */
+    background-color: #2e7d32;
+    color: white;
+    font-size: 16px; /* Thay đổi font-size để phù hợp với text */
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+    z-index: 1000;
+}
+
+.add-plant-button:hover {
+    transform: scale(1.05); /* Giảm hiệu ứng scale để phù hợp hơn với nút có chữ */
+}

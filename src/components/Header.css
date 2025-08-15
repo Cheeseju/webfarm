@@ -1,0 +1,59 @@
+.header {
+  position: fixed; /* Giữ header luôn ở vị trí cố định */
+  top: 0;
+  left: 0;
+  width: 98%; /* Đảm bảo header chiếm toàn bộ chiều rộng */
+  z-index: 1000; /* Đặt một giá trị cao để header luôn nằm trên các thành phần khác */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #2e7d32;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Thêm hiệu ứng bóng đổ */
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.search-bar-container {
+  flex-grow: 1; /* Cho phép khu vực này chiếm hết không gian còn lại */
+  display: flex;
+  justify-content: center; /* Căn giữa thanh tìm kiếm */
+  margin: 0 20px; /* Thêm khoảng cách hai bên */
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 8px 15px;
+  width: 100%; /* Đảm bảo thanh tìm kiếm chiếm toàn bộ chiều rộng của container */
+  max-width: 500px; /* Giới hạn chiều rộng tối đa */
+}
+
+.search-bar input {
+  border: none;
+  background: transparent;
+  color: white;
+  margin-left: 10px;
+  outline: none;
+  flex-grow: 1;
+}
+.search-bar input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.filter-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.filter-icons svg {
+  cursor: pointer;
+  font-size: 20px;
+}

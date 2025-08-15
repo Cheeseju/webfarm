@@ -1,0 +1,79 @@
+/* src/components/DiariesList.css */
+.diaries-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Căn giữa các item con (các nhóm cây trồng) */
+   padding-top: 20px;     /* Thêm margin left để nội dung không bị che bởi sidebar */
+    margin-left: 300px;
+   
+}
+
+.diaries-list-plant-group {
+  width: 100%; /* Đảm bảo nhóm cây trồng chiếm đủ chiều rộng */
+  max-width: 800px; /* Giới hạn độ rộng tối đa của các nhóm cây trồng */
+}
+
+.diaries-list-plant-group h2 {
+  color: #2e7d32;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+.diaries-list-plant-card {
+  display: flex;
+  align-items: center;
+  background-color: #f0f4f7;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-width: 700px; /* Giới hạn độ rộng tối đa của từng card cây trồng */
+  width: 100%; /* Đảm bảo card chiếm đủ chiều rộng của container cha */
+}
+
+.diaries-list-plant-card .diary-plant-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 15px;
+}
+
+.diaries-list-plant-card .diary-plant-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.diaries-list-plant-card .diary-plant-info h3 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.diaries-list-plant-card .diary-plant-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #777;
+}
+
+.diaries-list-plant-card .diary-plant-info button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 4px 8px; /* Giảm padding để thu nhỏ độ rộng và chiều cao của nút */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 11px; /* Giảm kích thước font để nút nhỏ hơn */
+  margin-top: 5px; /* Thêm một chút khoảng trống giữa text và nút */
+  max-width: 120px; /* Thêm giới hạn độ rộng tối đa cho nút */
+  width: auto; /* Đảm bảo nút chỉ chiếm đúng độ rộng của nội dung */
+  align-self: flex-start;
+}
+
+.diaries-list-plant-card .diary-plant-info button:hover {
+  background-color: #45a049;
+}

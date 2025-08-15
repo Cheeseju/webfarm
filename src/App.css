@@ -1,38 +1,17 @@
+/* src/App.css */
 .App {
-  text-align: center;
+    display: flex; /* Bố cục chính là Flexbox theo chiều dọc */
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.main-content {
+    display: flex; /* Bố cục này là Flexbox theo chiều ngang */
+    flex-grow: 1; /* Cho phép khu vực này chiếm hết không gian còn lại */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.content-area {
+    flex-grow: 1; /* Khu vực này sẽ chiếm hết không gian còn lại của main-content */
+    padding: 20px;
+    background-color: #f4f7f5;
 }
