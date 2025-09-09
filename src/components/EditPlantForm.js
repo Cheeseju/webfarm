@@ -1,72 +1,49 @@
+// src/components/EditPlantForm.js
 import React, { useState, useEffect } from 'react';
 import PlantDataService from "../services/plant.services";
 import { uploadImage } from "../services/upload.services";
-import './AddPlantForm.css';
+import './AddPlantForm.css'; // Sử dụng lại CSS của AddPlantForm
 import { FaClock, FaTint, FaCloudSun, FaSeedling, FaTree, FaMoneyBillWave } from 'react-icons/fa';
 import { auth } from '../firebase-config';
-import { useNotification } from '../context/NotificationContext';
-import authService from '../services/authservices';
+import { useNotification } from '../context/NotificationContext'; // <-- 1. Import hook
 
-const AddPlantForm = ({ onClose, onSave }) => {
-  const { showNotification } = useNotification();
-  const [name, setName] = useState("");
-  const [otherName, setOtherName] = useState("");
-  const [type, setType] = useState("");
-  const [description, setDescription] = useState("");
-  const [plantTypes, setPlantTypes] = useState([]);
-  const [plantingTime, setPlantingTime] = useState("");
-  const [waterAmount, setWaterAmount] = useState("");
-  const [weather, setWeather] = useState("");
-  const [season, setSeason] = useState("");
-  const [origin, setorigin] = useState("");
-  const [price, setPrice] = useState("");
-  const [isAddingNewType, setIsAddingNewType] = useState(false);
-  const [newType, setNewType] = useState("");
+const EditPlantForm = ({ onClose, onSave, plant, plantId }) => {
+  const { showNotification } = useNotification(); // <-- 2. Lấy hàm showNotification
+  const [name, setName] = useState(plant.name || "");
+  const [otherName, setOtherName] = useState(plant.otherName || "");
+  const [description, setDescription] = useState(plant.description || "");
+  const [plantingTime, setPlantingTime] = useState(plant.plantingTime || "");
+  const [waterAmount, setWaterAmount] = useState(plant.waterAmount || "");
+  const [weather, setWeather] = useState(plant.weather || "");
+  const [season, setSeason] = useState(plant.season || "");
+  const [origin, setorigin] = useState(plant.origin || "");
+  const [price, setPrice] = useState(plant.price || "");
   
   const [selectedFile, setSelectedFile] = useState(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(plant.imageUrl || null);
   const [isSaving, setIsSaving] = useState(false);
   const [nameError, setNameError] = useState("");
-  const [typeError, setTypeError] = useState("");
-  
-  // State để xác định vai trò người dùng hiện tại
-  const [userRole, setUserRole] = useState(null);
-
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const role = await authService.getUserRole(user.uid);
-        setUserRole(role);
-        const types = await PlantDataService.getPlantTypes(user.uid);
-        setPlantTypes(types);
-      }
-    };
-    fetchUserRole();
-  }, []);
 
   useEffect(() => {
     if (selectedFile) {
-      setImagePreviewUrl(URL.createObjectURL(selectedFile));
+      const newUrl = URL.createObjectURL(selectedFile);
+      setImagePreviewUrl(newUrl);
+      return () => URL.revokeObjectURL(newUrl);
+    } else {
+      setImagePreviewUrl(plant.imageUrl || null);
     }
-  }, [selectedFile]);
+  }, [selectedFile, plant.imageUrl]);
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+    setSelectedFile(e.target.files[0] || null);
   };
-  
+
   const handleSave = async (e) => {
     e.preventDefault();
     setNameError("");
-    setTypeError("");
 
     if (!name.trim()) {
       setNameError("Vui lòng nhập tên cây trồng.");
-      return;
-    }
-    
-    if (!type.trim() && !newType.trim()) {
-      setTypeError("Vui lòng chọn hoặc nhập loại cây trồng.");
       return;
     }
 
@@ -77,65 +54,61 @@ const AddPlantForm = ({ onClose, onSave }) => {
     }
 
     try {
-      const isExist = await PlantDataService.isPlantNameExist(name, type || newType, user.uid);
+      const isExist = await PlantDataService.isPlantNameExist(name, plant.type, user.uid, plantId);
       if (isExist) {
         setNameError(`Tên cây trồng "${name}" đã tồn tại trong cùng loại. Vui lòng chọn tên khác.`);
         return;
       }
     } catch (err) {
       console.error("Lỗi khi kiểm tra tên cây trồng:", err.message);
-      showNotification('Có lỗi xảy ra khi kiểm tra tên cây trồng.', 'error');
+      showNotification('Có lỗi xảy ra khi kiểm tra tên cây trồng.', 'error'); // <-- 3. Thay thế alert
       return;
     }
 
     setIsSaving(true);
-    let uploadedImageUrl = "";
+    let uploadedImageUrl = plant.imageUrl;
 
     if (selectedFile) {
       try {
         uploadedImageUrl = await uploadImage(selectedFile);
       } catch (err) {
-        showNotification('Lỗi khi tải ảnh lên. Vui lòng thử lại.', 'error');
+        showNotification('Lỗi khi tải ảnh lên. Vui lòng thử lại.', 'error'); // <-- 3. Thay thế alert
         setIsSaving(false);
         return;
       }
     }
 
-    const newPlant = {
+    const updatedPlant = {
       name,
       otherName,
-      type: type || newType,
       description,
-      imageUrl: uploadedImageUrl,
       plantingTime,
       waterAmount,
       weather,
       season,
       origin,
       price,
-      userId: user.uid,
-      // **LOGIC QUAN TRỌNG:** Nếu là admin, isPublic là true. Ngược lại là false.
-      isPublic: userRole === 'admin',
+      imageUrl: uploadedImageUrl,
     };
-    
+
     try {
-      await PlantDataService.addPlant(newPlant);
-      showNotification('Thêm cây trồng mới thành công!', 'success');
-      onSave();
+      await PlantDataService.updatePlant(plantId, updatedPlant);
+      showNotification('Cập nhật cây trồng thành công!', 'success'); // Thêm thông báo thành công
+      onSave(); // Gọi onSave trước khi đóng để danh sách được làm mới
       onClose();
     } catch (err) {
-      console.error("Lỗi khi thêm cây trồng:", err.message);
-      showNotification('Có lỗi xảy ra khi thêm cây trồng.', 'error');
+      console.error("Lỗi khi cập nhật cây trồng:", err.message);
+      showNotification('Có lỗi xảy ra khi cập nhật cây trồng.', 'error'); // <-- 3. Thay thế alert
     } finally {
       setIsSaving(false);
     }
   };
-
+  
   return (
     <div className="add-plant-form-overlay">
       <div className="add-plant-form-container">
         <button className="close-button" onClick={onClose}>&times;</button>
-        <h2>THÊM CÂY TRỒNG MỚI</h2>
+        <h2>CHỈNH SỬA CÂY TRỒNG</h2>
         <form onSubmit={handleSave}>
           <div className="form-content">
             <div className="form-left">
@@ -144,7 +117,10 @@ const AddPlantForm = ({ onClose, onSave }) => {
                 <input 
                   type="text" 
                   value={name} 
-                  onChange={(e) => { setName(e.target.value); setNameError(""); }} 
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setNameError(""); 
+                  }} 
                 />
                 {nameError && <span className="error-message">{nameError}</span>}
               </div>
@@ -152,57 +128,28 @@ const AddPlantForm = ({ onClose, onSave }) => {
                 <label>Tên khác</label>
                 <input type="text" value={otherName} onChange={(e) => setOtherName(e.target.value)} />
               </div>
-              <div className="form-group type-select-group">
+              <div className="form-group">
                 <label>Loại</label>
-                {isAddingNewType ? (
-                  <input
-                    type="text"
-                    value={newType}
-                    onChange={(e) => { setNewType(e.target.value); setTypeError(""); }}
-                    placeholder="Nhập loại cây mới"
-                  />
-                ) : (
-                  <select 
-                    value={type} 
-                    onChange={(e) => {
-                      if (e.target.value === "addNew") {
-                        setIsAddingNewType(true);
-                        setType(""); 
-                        setNewType(""); 
-                      } else {
-                        setType(e.target.value);
-                        setTypeError(""); 
-                      }
-                    }}
-                  >
-                    <option value="">-- Chọn loại cây --</option>
-                    {plantTypes.map((plantType) => (
-                      <option key={plantType} value={plantType}>
-                        {plantType}
-                      </option>
-                    ))}
-                    <option value="addNew">Thêm loại mới...</option>
-                  </select>
-                )}
-                {typeError && <span className="error-message">{typeError}</span>}
+                <input type="text" value={plant.type} disabled />
               </div>
             </div>
+
             <div className="form-right">
-                <div className="image-preview">
-                    {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                </div>
-                <label htmlFor="file-upload" className="file-upload-label">
-                    Chọn file ảnh
-                </label>
-                <input
-                    id="file-upload"
-                    type="file"
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                />
+              <div className="image-preview">
+                {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+              </div>
+              <label htmlFor="file-upload" className="file-upload-label">
+                Đổi file ảnh
+              </label>
+              <input
+                  id="file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+              />
             </div>
           </div>
-          
+
           <h2>Thông tin</h2>
           <div className="info-grid">
            <div className="info-card">
@@ -263,4 +210,4 @@ const AddPlantForm = ({ onClose, onSave }) => {
   );
 };
 
-export default AddPlantForm;
+export default EditPlantForm;

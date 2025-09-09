@@ -2,30 +2,39 @@
 import React from 'react';
 import './Sidebar.css';
 
-const Sidebar = ({ onPageChange, currentPage }) => { // The component must accept these props
+// Add userRole to the component props
+const Sidebar = ({ onPageChange, currentPage, userRole }) => { 
+    const isPlantsActive = currentPage === 'plants' || currentPage === 'plantDetails';
+    const isDiariesActive = currentPage === 'diaries' || currentPage === 'diaryDetails';
+    const isAdminActive = currentPage === 'admin';
+    
     return (
         <div className="sidebar">
             <div 
-                className={`sidebar-item ${currentPage === 'diaries' ? 'active' : ''}`} 
-                onClick={() => onPageChange('diaries')} // This function call requires the prop
+              className={`sidebar-item ${isDiariesActive ? 'active' : ''}`} 
+                onClick={() => onPageChange('diaries')} 
             >
                 <i className="calendar-icon">📅</i>
                 <span>Nhật ký</span>
             </div>
             <div 
-                className={`sidebar-item ${currentPage === 'plants' ? 'active' : ''}`} 
+                 className={`sidebar-item ${isPlantsActive ? 'active' : ''}`} 
                 onClick={() => onPageChange('plants')}
             >
                 <i className="plant-icon">🌿</i>
                 <span>Cây trồng</span>
             </div>
-            <div 
-                className={`sidebar-item ${currentPage === 'schedule' ? 'active' : ''}`}
-                onClick={() => onPageChange('schedule')}
-            >
-                <i className="schedule-icon">📋</i>
-                <span>Kế hoạch</span>
-            </div>
+          
+            {/* Thêm mục Admin nếu người dùng có role admin */}
+            {userRole === 'admin' && (
+                <div 
+                  className={`sidebar-item ${isAdminActive ? 'active' : ''}`} 
+                  onClick={() => onPageChange('admin')}
+                >
+                    <i className="admin-icon">⚙️</i>
+                    <span>Quản trị</span>
+                </div>
+            )}
         </div>
     );
 };

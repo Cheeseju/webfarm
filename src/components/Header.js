@@ -1,26 +1,48 @@
 import React from 'react';
 import './Header.css';
-import { FaSearch, FaFilter, FaSort } from 'react-icons/fa'; // Giữ lại icons nếu cần
+import { FaSearch, FaFilter, FaSignOutAlt } from 'react-icons/fa';
 
-const Header = () => {
-  return (
-    <header className="header">
-      <div className="logo">
-        {/* Bạn có thể đặt ảnh logo vào đây hoặc dùng text */}
-        <h1>FARMC</h1>
-      </div>
-      <div className="search-bar-container">
-        <div className="search-bar">
-          <FaSearch />
-          <input type="text" placeholder="Tìm kiếm theo tên/loại cây trồng" />
-        </div>
-      </div>
-      <div className="filter-icons">
-        <FaSort />
-        <FaFilter />
-      </div>
-    </header>
-  );
+const Header = ({ onSearch, searchQuery, user, onLogout, userRole, onFilterClick, showFilterButton , onLoginClick}) => {
+    return (
+        <header className="header">
+            <div className="logo">
+                <h1>FARMC</h1>
+            </div>
+            <div className="search-bar-container">
+                <div className="search-bar">
+                    <FaSearch />
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm theo tên/loại cây trồng"
+                        value={searchQuery}
+                        onChange={(e) => onSearch(e.target.value)}
+                    />
+                </div>
+            </div>
+            <div className="header-right">
+                {user ? (
+                    <>
+                <div className="filter-icons">
+                    {/* Nút lọc chỉ hiển thị cho farmer và khi đang ở trang DiariesList */}
+                    {userRole === 'farmer' && showFilterButton && (
+                        <FaFilter
+                            onClick={onFilterClick}
+                            style={{ cursor: 'pointer', fontSize: '20px' }}
+                        />
+                    )}
+                </div>
+              <button onClick={onLogout} className="logout-button">
+                            <FaSignOutAlt />
+                        </button>
+                    </>
+                ) : (
+                    <button onClick={onLoginClick} className="header-login-button">
+                        Đăng nhập / Đăng ký
+                    </button>
+                )}
+            </div>
+        </header>
+    );
 };
 
 export default Header;

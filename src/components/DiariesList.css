@@ -77,3 +77,35 @@
 .diaries-list-plant-card .diary-plant-info button:hover {
   background-color: #45a049;
 }
+
+
+.diaries-list-header {
+    position: relative;
+}
+
+.toggle-diary-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 20px;
+}
+
+.toggle-diary-filter-btn:hover {
+  background-color: #1b5e20;
+}
+
+.no-results-message {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  width: 100%;
+}

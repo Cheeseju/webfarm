@@ -1,0 +1,202 @@
+/* src/components/Homepage.css */
+
+.homepage-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    /* Loại bỏ height: 100vh để nội dung tự co giãn */
+    padding: 0px;
+    background-color: #f0f2f5;
+    color: #333;
+    min-height: 100vh; /* Sử dụng min-height để đảm bảo trang luôn có chiều cao tối thiểu */
+}
+
+/* Thêm style cho phần hero image */
+.homepage-hero {
+    position: relative;
+    width: 100%;
+    /* Sửa giá trị này */
+    height: 60vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin: 0;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+  object-fit: fill; 
+}
+
+.hero-text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-text-overlay h1 {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.hero-text-overlay p {
+    font-size: 1.5rem;
+    max-width: 800px;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.homepage-buttons {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.login-button,
+.signup-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.login-button {
+     background-color:#2e7d32;
+    border: 2px solid #145116;
+    color: white;
+}
+
+.login-button:hover {
+    background-color: #1b5e20;
+    transform: translateY(-2px);
+}
+
+.signup-button {
+    background-color:#2e7d32;
+    border: 2px solid #145116;
+    color: white;
+}
+
+.signup-button:hover {
+    background-color: #2e7d32;
+    color: white;
+    transform: translateY(-2px);
+}
+/* Phần mới thêm */
+.features-section {
+     padding: 50px 0;
+    background-color: #ffffff;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.features-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #2e7d32; /* Màu xanh lá cây */
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background-color: #f9f9f9;
+    padding: 80px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.feature-card p {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* Phần Footer */
+.homepage-footer {
+    background-color: #2e7d32; /* Màu xanh lá cây tương tự header */
+    color: white;
+    padding: 0px;
+    width: 100%;
+  
+    box-sizing: border-box;
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.footer-content div {
+    flex: 1;
+    min-width: 200px;
+    margin: 10px;
+}
+
+
+
+.footer-contact h4, .footer-links h4 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.footer-contact p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0px;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: text-decoration 0.3s ease;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}

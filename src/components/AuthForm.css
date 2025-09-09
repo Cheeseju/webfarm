@@ -1,0 +1,95 @@
+/* src/components/AuthForm.css */
+.auth-form-container {
+    display: flex;
+    flex-direction: column;
+
+ position: relative; /* Đảm bảo container này có position relative */
+ 
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+}
+
+.auth-form-container h2 {
+    font-size: 2rem;
+    color: #2e7d32;
+    margin-bottom: 20px;
+}
+
+.auth-form-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.auth-form-container input,
+.auth-form-container select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.auth-form-container button {
+    padding: 12px;
+    background-color: #2e7d32;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-form-container button:hover {
+    background-color: #1b5e20;
+}
+
+.auth-form-container .link {
+    color: #2e7d32;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.auth-form-container .link:hover {
+    color: #1b5e20;
+    text-decoration: underline;
+}
+
+.auth-form-container p {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #555;
+}
+.auth-form-container .error-message {
+    color: #d32f2f; /* Màu đỏ đậm */
+    font-size: 0.85rem;
+    margin-top: -10px; /* Giảm khoảng cách với input phía trên */
+    margin-bottom: 10px;
+    text-align: left; /* Căn lề trái */
+    width: 100%;
+}
+
+.auth-form-container .close-button  {
+ position: absolute;
+ top: 10px;
+ right: 10px; 
+ background: none;
+ border: none;
+ font-size: 1.5rem;
+ color: #1b5e20;
+ cursor: pointer;
+ transition: color 0.3s ease;
+ padding: 0; 
+}
+
+.auth-form-container .close-button:hover {
+    color: #e3f7e4;
+}

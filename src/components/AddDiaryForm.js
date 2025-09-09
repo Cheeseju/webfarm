@@ -1,10 +1,11 @@
-// src/components/AddDiaryForm.js
-
 import React, { useState } from 'react';
 import DiaryDataService from '../services/diary.services';
+
 import './AddDiaryForm.css';
+import { auth } from '../firebase-config';
 
 const AddDiaryForm = ({ plantId, onSave, onCancel, plantImageUrl }) => {
+  const user = auth.currentUser;
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
@@ -14,8 +15,8 @@ const AddDiaryForm = ({ plantId, onSave, onCancel, plantImageUrl }) => {
     status: 'Đang canh tác',
   });
   
-  // 1. Thêm state mới để quản lý thông báo lỗi
   const [titleError, setTitleError] = useState('');
+  const [isChecking, setIsChecking] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,6 +24,7 @@ const AddDiaryForm = ({ plantId, onSave, onCancel, plantImageUrl }) => {
       ...diaryData,
       [name]: value,
     });
+    
     // Xóa lỗi khi người dùng bắt đầu nhập
     if (name === 'title' && value.trim() !== '') {
       setTitleError('');
@@ -30,30 +32,46 @@ const AddDiaryForm = ({ plantId, onSave, onCancel, plantImageUrl }) => {
   };
 
   const handleSave = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  
+  if (!diaryData.title.trim()) {
+    setTitleError("Vui lòng điền tên nhật ký!");
+    return;
+  }
+  
+  setIsChecking(true);
+  
+  try {
+    // Kiểm tra trùng tên nhật ký trong cùng cây trồng
+    const isExist = await DiaryDataService.isDiaryNameExistForPlant(
+      user.uid, 
+      diaryData.title, 
+      plantId
+    );
     
-    // 2. Thay đổi cách xử lý lỗi, sử dụng state thay vì alert
-    if (!diaryData.title) {
-      setTitleError("Vui lòng điền tên nhật ký!");
+    if (isExist) {
+      setTitleError(`Tên nhật ký "${diaryData.title}" đã tồn tại cho cây trồng này. Vui lòng chọn tên khác.`);
+      setIsChecking(false);
       return;
     }
     
-    // Xóa lỗi nếu dữ liệu hợp lệ
-    setTitleError('');
-
-    try {
-      await DiaryDataService.addDiary({
-        ...diaryData,
-        plantId: plantId, 
-        imageUrl: plantImageUrl, 
-        date: new Date(diaryData.date), 
-        createdAt: new Date(),
-      });
-      onSave(); 
-    } catch (err) {
-      console.error("Lỗi khi lưu nhật ký:", err.message);
-    }
-  };
+    // Nếu không trùng, tiếp tục lưu nhật ký
+    const newDiaryData = {
+      ...diaryData,
+      plantId: plantId,
+      date: new Date(diaryData.date),
+      userId: user.uid,
+    };
+    
+    await DiaryDataService.addDiary(newDiaryData);
+    onSave();
+  } catch (err) {
+    console.error("Lỗi khi thêm nhật ký:", err.message);
+    setTitleError("Đã xảy ra lỗi khi lưu nhật ký. Vui lòng thử lại!");
+  } finally {
+    setIsChecking(false);
+  }
+};
 
   return (
     <div className="add-diary-form-overlay">
@@ -72,33 +90,26 @@ const AddDiaryForm = ({ plantId, onSave, onCancel, plantImageUrl }) => {
             value={diaryData.title} 
             onChange={handleInputChange} 
             placeholder="Tên nhật ký"
-            className={titleError ? 'input-error' : ''} // Thêm class CSS khi có lỗi
+            className={titleError ? 'input-error' : ''}
           />
           
-          {/* 3. Hiển thị thông báo lỗi trực tiếp dưới input */}
           {titleError && <p className="error-message">{titleError}</p>}
 
           <label>Ngày trồng:</label>
           <input 
             type="text"
             name="date" 
-            value={new Date(diaryData.date).toLocaleDateString()}
+           value={new Date(diaryData.date).toLocaleDateString('vi-VN')}
             readOnly
           />
 
-          <label>Trạng thái:</label>
-          <select 
-            name="status" 
-            value={diaryData.status} 
-            onChange={handleInputChange}
-          >
-            <option value="Đang canh tác">Đang canh tác</option>
-            <option value="Đã thu hoạch">Đã thu hoạch</option>
-          </select>
-
           <div className="form-buttons">
-            <button type="button" onClick={onCancel}>Hủy</button>
-            <button type="submit">Lưu</button>
+            <button type="button" onClick={onCancel} disabled={isChecking}>
+              Hủy
+            </button>
+            <button type="submit" disabled={isChecking}>
+              {isChecking ? 'Đang kiểm tra...' : 'Lưu'}
+            </button>
           </div>
         </form>
       </div>

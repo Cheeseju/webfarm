@@ -1,12 +1,12 @@
 /* src/App.css */
 .App {
-    display: flex; /* Bố cục chính là Flexbox theo chiều dọc */
+    display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 100vh; /* Đảm bảo ứng dụng chiếm toàn bộ chiều cao màn hình */
 }
 
 .main-content {
-    display: flex; /* Bố cục này là Flexbox theo chiều ngang */
+    display: flex; 
     flex-grow: 1; /* Cho phép khu vực này chiếm hết không gian còn lại */
 }
 
@@ -14,4 +14,5 @@
     flex-grow: 1; /* Khu vực này sẽ chiếm hết không gian còn lại của main-content */
     padding: 20px;
     background-color: #f4f7f5;
+    overflow-y: auto;
 }

@@ -1,0 +1,57 @@
+/* src/components/Notification.css */
+
+.notification {
+  /* SỬA LỖI 1: Thay đổi vị trí để căn giữa */
+  position: fixed;
+  top: 50%; /* Dịch 50% từ trên xuống */
+  left: 50%; /* Dịch 50% từ trái sang */
+  transform: translate(-50%, -50%); /* Dịch ngược lại 50% kích thước của chính nó */
+  
+  /* Các thuộc tính còn lại */
+  padding: 15px 25px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  z-index: 1000;
+  
+  /* SỬA LỖI 2: Cập nhật animation cho đẹp hơn */
+  animation: fadeInOut 4s forwards;
+}
+
+.notification.info {
+  background-color: #2196f3;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+
+.notification.success {
+  background-color: #4caf50;
+}
+
+.notification.warning {
+  background-color: #ff9800;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: 15px;
+}
+
+/* SỬA LỖI 3: Keyframes mới để hiện ra từ trên và mờ dần */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -80%); }
+  10% { opacity: 1; transform: translate(-50%, -50%); }
+  90% { opacity: 1; transform: translate(-50%, -50%); }
+  100% { opacity: 0; transform: translate(-50%, -20%); }
+}

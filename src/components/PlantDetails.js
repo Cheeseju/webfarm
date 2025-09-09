@@ -2,19 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import PlantDataService from '../services/plant.services';
 import './PlantDetails.css';
-import { FaClock, FaTint, FaCloudSun, FaSeedling, FaTree, FaMoneyBillWave } from 'react-icons/fa';
+import { FaClock, FaTint, FaCloudSun, FaSeedling, FaTree, FaMoneyBillWave, FaEdit } from 'react-icons/fa';
+import { auth } from '../firebase-config';
 
-// Thêm onAddDiaryClick vào props
-const PlantDetails = ({ plantId, onBackToList, onAddDiaryClick }) => {
+// Thêm onEditClick và refreshKey vào props
+const PlantDetails = ({ plantId, onBackToList, onAddDiaryClick, onEditClick, refreshKey, userRole }) => {
     const [plant, setPlant] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const user = auth.currentUser;
 
     useEffect(() => {
         const getPlantDetails = async () => {
+            setLoading(true);
             try {
                 if (plantId) {
                     const docSnap = await PlantDataService.getPlant(plantId);
                     if (docSnap.exists()) {
-                        setPlant(docSnap.data());
+                        setPlant({ ...docSnap.data(), id: docSnap.id });
                     } else {
                         console.log("Không tìm thấy tài liệu với ID:", plantId);
                         setPlant(null);
@@ -22,16 +26,27 @@ const PlantDetails = ({ plantId, onBackToList, onAddDiaryClick }) => {
                 }
             } catch (err) {
                 console.error("Lỗi khi lấy dữ liệu cây trồng:", err.message);
+            } finally {
+                setLoading(false);
             }
         };
         getPlantDetails();
-    }, [plantId]);
+    }, [plantId, refreshKey]); // Thêm refreshKey vào mảng dependency
+
+    if (loading) {
+        return (
+            <div className="plant-details-container">
+                <button onClick={onBackToList} className="back-button">← Quay lại danh sách</button>
+                <p>Đang tải...</p>
+            </div>
+        );
+    }
 
     if (!plant) {
         return (
             <div className="plant-details-container">
                 <button onClick={onBackToList} className="back-button">← Quay lại danh sách</button>
-                <p>Đang tải hoặc không tìm thấy dữ liệu...</p>
+                <p>Không tìm thấy dữ liệu cây trồng này.</p>
             </div>
         );
     }
@@ -39,6 +54,11 @@ const PlantDetails = ({ plantId, onBackToList, onAddDiaryClick }) => {
     return (
         <div className="plant-details-container">
             <button onClick={onBackToList} className="back-button">← Quay lại danh sách</button>
+       {user && plant && (plant.userId === user.uid || (userRole === 'admin' && plant.isPublic)) && (
+    <button onClick={() => onEditClick(plant)} className="edit-button">
+        <FaEdit /> Chỉnh sửa
+    </button>
+)}
             
             <div className="plant-info-header">
                 <div className="plant-image-wrapper">
@@ -91,7 +111,12 @@ const PlantDetails = ({ plantId, onBackToList, onAddDiaryClick }) => {
 
             <h2>Nhật ký canh tác</h2>
             <div className="diary-section">
-                <button className="add-diary-button" onClick={() => onAddDiaryClick(plantId)}> Thêm nhật ký của bạn </button>
+   {/* Chỉ hiển thị nút thêm nhật ký cho farmer đã đăng nhập */}
+        {user && userRole === 'farmer' && (
+          <button className="add-diary-button" onClick={() => onAddDiaryClick(plantId)}>
+            Thêm nhật ký của bạn
+          </button>
+        )}
             </div>
         </div>
     );
