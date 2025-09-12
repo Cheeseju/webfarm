@@ -1,0 +1,91 @@
+/* src/components/ActivityFeed.css */
+.activity-feed-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-feed-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #2e7d32;
+}
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    font-size: 1.5rem; /* Kích thước icon */
+    margin-right: 15px;
+    color: #2e7d32; /* Màu xanh lá cây cho icon */
+    width: 30px; /* Đảm bảo icon có cùng chiều rộng */
+    text-align: center;
+}
+
+/* Biểu tượng cụ thể có thể có màu riêng */
+.activity-icon .fa-leaf { /* Icon lá cây cho nhật ký */
+    color: #4CAF50; 
+}
+.activity-icon .fa-qrcode { /* Icon QR */
+    color: #5D5D5D;
+}
+.activity-icon .fa-circle-plus { /* Icon thêm giai đoạn */
+    color: #2196F3;
+}
+.activity-icon .fa-user-pen { /* Icon mặc định */
+    color: #FFC107;
+}
+
+
+.activity-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.activity-content p {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+    word-break: break-word; /* Để văn bản dài tự xuống dòng */
+}
+
+.activity-content strong {
+    color: #000;
+}
+
+.activity-time {
+    font-size: 0.85rem;
+    color: #777;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+    .activity-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}

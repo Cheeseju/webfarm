@@ -1,15 +1,16 @@
 // src/components/Sidebar.js
 import React from 'react';
 import './Sidebar.css';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 
 // Add userRole to the component props
-const Sidebar = ({ onPageChange, currentPage, userRole }) => { 
+const Sidebar = ({ onPageChange, currentPage, userRole, isOpen, isCollapsed, onToggleCollapse }) => {
     const isPlantsActive = currentPage === 'plants' || currentPage === 'plantDetails';
     const isDiariesActive = currentPage === 'diaries' || currentPage === 'diaryDetails';
     const isAdminActive = currentPage === 'admin';
     
     return (
-        <div className="sidebar">
+        <div className={`sidebar ${isOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
             <div 
               className={`sidebar-item ${isDiariesActive ? 'active' : ''}`} 
                 onClick={() => onPageChange('diaries')} 
@@ -35,6 +36,9 @@ const Sidebar = ({ onPageChange, currentPage, userRole }) => {
                     <span>Quản trị</span>
                 </div>
             )}
+            <div className="sidebar-toggle" onClick={onToggleCollapse}>
+                {isCollapsed ? <FaAngleRight /> : <FaAngleLeft />}
+            </div>
         </div>
     );
 };

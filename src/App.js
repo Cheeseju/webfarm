@@ -2,11 +2,9 @@ import './App.css';
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
-
 import { NotificationProvider } from './context/NotificationContext';
 import { auth } from './firebase-config';
 import authService from './services/authservices';
-
 import Homepage from './components/HomePage';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -35,13 +33,14 @@ const AppContent = () => {
   const [searchQuery, setSearchQuery] = useState('');  
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [diaryFilters, setDiaryFilters] = useState(null);
-  // State mới để quản lý chế độ khách
   const [isGuestMode, setIsGuestMode] = useState(false);
+
+  // SỬA LỖI 1: THÊM STATE ĐỂ QUẢN LÝ VIỆC THU GỌN SIDEBAR TRÊN DESKTOP
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      // Nếu có người dùng đăng nhập, tắt chế độ khách
       if (currentUser) {
         setIsGuestMode(false); 
         const role = await authService.getUserRole(currentUser.uid);
@@ -52,7 +51,9 @@ const AppContent = () => {
     });
     return () => unsubscribe();
   }, []);
-
+  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
    const handleEnterGuestMode = (page) => {
       setIsGuestMode(true);
       setCurrentPage(page);
@@ -65,6 +66,16 @@ const AppContent = () => {
     setCurrentPage(page);
     setSelectedPlantId(null);
     setDiaryFilters(null); 
+    setIsSidebarOpen(false); 
+  };
+
+   const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // Hàm này của bạn đã đúng, giờ nó sẽ hoạt động vì state đã được khai báo
+   const toggleSidebarCollapse = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
   };
   
   const handleApplyFilter = (filters) => {
@@ -120,7 +131,7 @@ const AppContent = () => {
  const handleLogout = async () => {
     try {
       await authService.signOutUser();
-      setIsGuestMode(false); // Tắt chế độ khách khi đăng xuất
+      setIsGuestMode(false);
     } catch (error) {
       console.error('Lỗi khi đăng xuất:', error);
     }
@@ -130,11 +141,17 @@ const AppContent = () => {
   }
 
   return (
-    <div className="main-content">
+    // SỬA LỖI 2: SỬA LẠI TÊN CLASS CỦA DIV CHA VÀ THÊM CLASS ĐỘNG
+    // Đổi "main-content" thành "main-container" và thêm class động
+    <div className={`main-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      {isSidebarOpen && <div className="sidebar-overlay" onClick={toggleSidebar}></div>}
       <Sidebar
         onPageChange={handlePageChange}
         currentPage={currentPage}
         userRole={userRole}
+        isOpen={isSidebarOpen} 
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebarCollapse} 
       />
       <Header
         onSearch={handleSearch}
@@ -144,16 +161,17 @@ const AppContent = () => {
         userRole={userRole}
         onFilterClick={() => setShowFilterModal(true)}
         showFilterButton={currentPage === 'diaries'}
-        onLoginClick={handleGoToLogin} // Hàm để quay lại trang chủ
+        onLoginClick={handleGoToLogin}
+        onToggleSidebar={toggleSidebar}
       />
       <div className="content-area">
+        {/* Phần nội dung bên trong giữ nguyên, không thay đổi */}
         {showFilterModal && userRole === 'farmer' && (
             <FilterModal 
                 onClose={() => setShowFilterModal(false)}
                 onApplyFilter={handleApplyFilter}
             />
         )}
-
         {showAddForm && <AddPlantForm onClose={() => setShowAddForm(false)} onSave={handlePlantAdded} />}
         {showEditForm && plantToEdit && (
           <EditPlantForm
@@ -170,9 +188,7 @@ const AppContent = () => {
             onCancel={() => setShowAddDiaryForm(false)}
           />
         )}
-        
         {currentPage === 'admin' && userRole === 'admin' && <AdminDashboard />}
-        
         {currentPage === 'plants' && (
           <PlantsList
             onCardClick={(id) => {
@@ -186,7 +202,6 @@ const AppContent = () => {
             filterType="all"
           />
         )}
-        
         {currentPage === 'plantDetails' && (
           <PlantDetails
             plantId={selectedPlantId}
@@ -197,7 +212,6 @@ const AppContent = () => {
             userRole={userRole}
           />
         )}
-        
         {currentPage === 'diaries' && (
           <DiariesList 
             onPlantSelect={handlePlantSelect}  
@@ -207,7 +221,6 @@ const AppContent = () => {
             diaryFilters={diaryFilters}
           />
         )}
-        
         {currentPage === 'diaryDetails' && userRole === 'farmer' && (
           <DiaryDetails 
             plantId={selectedPlantId} 

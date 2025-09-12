@@ -1,8 +1,7 @@
 /* src/components/DiaryDetails.css */
 .diary-details {
   padding: 20px;
-   margin-left: 300px; /* Bằng với chiều rộng của sidebar */
-    padding-top: 60px;
+  padding-top: 60px;
 }
 
 .diary-header {
@@ -95,4 +94,17 @@
   bottom: 20px;
   right: 20px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
+
+@media (max-width: 768px) {
+  .diary-details {
+    padding: 10px;
+  }
+
+  .diary-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .diary-grid {
+    grid-template-columns: 1fr;
+  }
+}}

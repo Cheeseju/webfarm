@@ -3,47 +3,55 @@ import './DiariesList.css';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '../firebase-config';
 import { useNotification } from '../context/NotificationContext';
-import DiaryDataService from '../services/diary.services';
+
 
 const DiariesList = ({ onPlantSelect, userRole, searchQuery, diaryFilters }) => {
   const [plants, setPlants] = useState([]);
   const [loading, setLoading] = useState(true);
   const { showNotification } = useNotification();
   const user = auth.currentUser;
-  const [allFarmerDiaries, setAllFarmerDiaries] = useState([]);
+  const [allFarmerDiaries] = useState([]);
 
-  useEffect(() => {
-    const getInitialData = async () => {
+ useEffect(() => {
+    const getPlants = async () => {
       setLoading(true);
-      if (!user) { setLoading(false); return; }
       
       try {
+        let plantsData = [];
         const plantsRef = collection(db, 'plants');
-        const publicQuery = query(plantsRef, where("isPublic", "==", true));
-        const publicSnapshot = await getDocs(publicQuery);
-        let plantsData = publicSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-        if (userRole === 'farmer') {
+        // Nếu là farmer, lấy cả public và private
+        if (user && userRole === 'farmer') {
+          const publicQuery = query(plantsRef, where("isPublic", "==", true));
           const privateQuery = query(plantsRef, where("userId", "==", user.uid));
-          const privateSnapshot = await getDocs(privateQuery);
-          const privatePlants = privateSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-          const plantMap = new Map();
-          [...plantsData, ...privatePlants].forEach(plant => plantMap.set(plant.id, plant));
-          plantsData = Array.from(plantMap.values());
 
-          const diarySnapshot = await DiaryDataService.getDiariesByUser(user.uid);
-          setAllFarmerDiaries(diarySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+          const [publicSnapshot, privateSnapshot] = await Promise.all([
+            getDocs(publicQuery),
+            getDocs(privateQuery)
+          ]);
+
+          const publicPlants = publicSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+          const privatePlants = privateSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+
+          const plantMap = new Map();
+          [...publicPlants, ...privatePlants].forEach(plant => plantMap.set(plant.id, plant));
+          plantsData = Array.from(plantMap.values());
+        } else { 
+            // Ngược lại (là buyer hoặc guest), chỉ lấy public
+            const publicQuery = query(plantsRef, where("isPublic", "==", true));
+            const querySnapshot = await getDocs(publicQuery);
+            plantsData = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         }
         
         setPlants(plantsData);
       } catch (error) {
-        console.error("Lỗi khi tải dữ liệu:", error);
+        console.error("Lỗi khi lấy dữ liệu cây trồng cho nhật ký:", error);
       } finally {
         setLoading(false);
       }
     };
     
-    getInitialData();
+    getPlants();
   }, [user, userRole]);
 
   const filteredPlants = useMemo(() => {

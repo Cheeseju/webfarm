@@ -155,15 +155,6 @@ h2 {
     width: 90%;
 }
 
-/* Style cho thông báo lỗi */
-.error-message {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
-  font-style: italic; 
-  font-weight: normal; 
-}
-
 /* Thêm style cho input file và nhãn */
 .file-upload-label {
     display: inline-block;
@@ -188,9 +179,151 @@ h2 {
   justify-content: center;
   align-items: center;
 }
-.error-message {
-  color: #d9534f;
-  font-size: 12px;
+
+.type-search-group {
+  position: relative; /* Bắt buộc để định vị danh sách gợi ý */
+}
+
+.type-suggestions-list {
+  position: absolute;
+  top: 100%; /* Hiển thị ngay dưới ô input */
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  list-style: none;
   margin-top: 5px;
-  display: block;
+  padding: 0;
+  max-height: 150px; /* Giới hạn chiều cao và cho phép cuộn */
+  overflow-y: auto;
+  z-index: 1001;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.type-suggestions-list li {
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.type-suggestions-list li:hover {
+  background-color: #f0f0f0;
+}
+
+.type-suggestions-list li.no-suggestion {
+  color: #888;
+  font-style: italic;
+  cursor: default;
+}
+.camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #000;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.camera-container video { /* Dành cho webcam feed */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.camera-controls button, .media-button {
+  padding: 8px 15px;
+  border-radius: 5px;
+  border: none;
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+}
+.camera-controls button:hover, .media-button:hover {
+  background-color: #218838;
+}
+
+.form-actions-media {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.media-preview {
+  margin-bottom: 10px;
+  max-width: 100%;
+}
+.media-preview img, .media-preview video {
+  max-width: 100%;
+  height: auto;
+  max-height: 250px;
+  border-radius: 5px;
+}
+@media (max-width: 768px) {
+  .add-plant-form-container {
+    padding: 20px;
+    max-height: 95vh;
+  }
+
+  .form-content {
+    flex-direction: column;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .form-buttons {
+    text-align: center;
+  }
+}
+.form-actions-media {
+  display: flex !important;
+  gap: 10px !important;
+}
+
+.form-actions-media > button, 
+.form-actions-media > label {
+    flex: 1 !important; /* Buộc 2 nút phải chia đều không gian */
+    box-sizing: border-box !important; /* Đảm bảo padding và border được tính đúng */
+
+    /* Các thuộc tính style */
+    padding: 12px 5px;
+    border-radius: 6px;
+    border: 1px solid #2e7d32;
+    background-color: #f0f7f0;
+    color: #2e7d32;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+
+    /* Căn giữa nội dung bên trong nút */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    white-space: nowrap !important;
+}
+
+.form-actions-media > button:hover, 
+.form-actions-media > label:hover {
+    background-color: #2e7d32 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }

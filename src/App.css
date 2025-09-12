@@ -5,14 +5,57 @@
     min-height: 100vh; /* Đảm bảo ứng dụng chiếm toàn bộ chiều cao màn hình */
 }
 
-.main-content {
+.main-container {
     display: flex; 
-    flex-grow: 1; /* Cho phép khu vực này chiếm hết không gian còn lại */
+    flex-grow: 1;
 }
 
+
 .content-area {
-    flex-grow: 1; /* Khu vực này sẽ chiếm hết không gian còn lại của main-content */
+    flex-grow: 1;
     padding: 20px;
     background-color: #f4f7f5;
     overflow-y: auto;
+    
+    /* Mặc định lề trái bằng chiều rộng sidebar */
+    margin-left: 250px;
+    
+    /* Thêm hiệu ứng chuyển động mượt mà */
+    transition: margin-left 0.3s ease-in-out;
+}
+.main-container.sidebar-collapsed .content-area {
+    /* Lề trái mới bằng chiều rộng sidebar khi thu gọn */
+    margin-left: 80px;
+}
+.error-message {
+  color: #dc3545; /* Chỉ là chữ đỏ */
+  font-size: 14px;
+  margin-top: 5px;
+  font-style: italic; 
+}
+@media (max-width: 768px) {
+    /* Điều chỉnh vùng nội dung chính để chiếm toàn bộ chiều rộng */
+    .content-area {
+        padding: 15px;
+    }
+
+    /* Quan trọng: Xóa bỏ lề trái của tất cả các trang con */
+    .plants-list-container, 
+    .diary-details, 
+    .plant-details-container,
+    .admin-dashboard,
+    .diaries-list {
+        margin-left: 0 !important;
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Màu đen mờ */
+        z-index: 1999; /* Nằm ngay dưới sidebar */
+        display: block; /* Chỉ hiển thị trên mobile khi state là open */
+    }
 }

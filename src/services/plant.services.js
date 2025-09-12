@@ -5,24 +5,28 @@ import {
   collection, getDocs, addDoc, doc,
   getDoc, query, where, updateDoc
 } from "firebase/firestore";
+import { normalizeString } from '../utils/textUtils';
 
 class PlantDataService {
 
-addPlant = (newPlant) => {
+  addPlant = (newPlant) => {
     const plantCollectionRef = collection(db, "plants");
     const plantWithMetadata = {
-      ...newPlant, // newPlant đã chứa sẵn isPublic: true hoặc false
-      name_lowercase: newPlant.name.toLowerCase(),
+      ...newPlant,
       createdAt: new Date(),
+      // Thêm các trường đã được chuẩn hóa để tìm kiếm hiệu quả
+      name_normalized: normalizeString(newPlant.name),
+      type_normalized: normalizeString(newPlant.type),
     };
     return addDoc(plantCollectionRef, plantWithMetadata);
-};
+  };
 
   updatePlant = (id, updatedPlant) => {
     const plantDoc = doc(db, "plants", id);
     const dataToUpdate = {
       ...updatedPlant,
-      name_lowercase: updatedPlant.name.toLowerCase()
+      // Cập nhật trường chuẩn hóa khi tên cây thay đổi
+      name_normalized: normalizeString(updatedPlant.name),
     };
     return updateDoc(plantDoc, dataToUpdate);
   };
@@ -30,19 +34,23 @@ addPlant = (newPlant) => {
   isPlantNameExist = async (name, type, userId, excludeId = null) => {
     if (!userId) return false;
     const plantsRef = collection(db, "plants");
-    const lowerCaseName = name.toLowerCase();
+    
+    // Chuẩn hóa dữ liệu đầu vào để so sánh
+    const normalizedName = normalizeString(name);
+    const normalizedType = normalizeString(type);
 
+    // Truy vấn chỉ dựa trên các trường đã chuẩn hóa để kiểm tra tất cả trường hợp
     const publicQuery = query(
       plantsRef,
-      where("name_lowercase", "==", lowerCaseName),
-      where("type", "==", type),
+      where("name_normalized", "==", normalizedName),
+      where("type_normalized", "==", normalizedType),
       where("isPublic", "==", true)
     );
 
     const privateQuery = query(
       plantsRef,
-      where("name_lowercase", "==", lowerCaseName),
-      where("type", "==", type),
+      where("name_normalized", "==", normalizedName),
+      where("type_normalized", "==", normalizedType),
       where("userId", "==", userId)
     );
 
@@ -85,7 +93,6 @@ addPlant = (newPlant) => {
     }
   };
 
-  // HÀM GÂY LỖI NẰM Ở ĐÂY, ĐẢM BẢO NÓ CÓ TÊN CHÍNH XÁC LÀ 'getPlant'
   getPlant = (id) => {
     const plantDoc = doc(db, "plants", id);
     return getDoc(plantDoc);

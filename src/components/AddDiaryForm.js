@@ -63,7 +63,7 @@ const AddDiaryForm = ({ plantId, onSave, onCancel, plantImageUrl }) => {
       userId: user.uid,
     };
     
-    await DiaryDataService.addDiary(newDiaryData);
+    await DiaryDataService.addDiary(newDiaryData,user.email);
     onSave();
   } catch (err) {
     console.error("Lỗi khi thêm nhật ký:", err.message);

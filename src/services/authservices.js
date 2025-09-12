@@ -68,14 +68,38 @@ class AuthService {
   };
 
   // Hàm đăng nhập bằng email và mật khẩu
-  signInWithEmail = async (email, password) => {
+ 
+ signInWithEmail = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
+      const user = userCredential.user;
+
+      // **BƯỚC KIỂM TRA QUAN TRỌNG**
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists() && userDocSnap.data().isDisabled === true) {
+        // Nếu bị vô hiệu hóa, đăng xuất và báo lỗi
+        await signOut(auth);
+        throw new Error('Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.');
+      }
+
+      if (!userDocSnap.exists()) {
+        // Nếu đã xóa hồ sơ, không cho đăng nhập
+        await signOut(auth);
+        throw new Error('Tài khoản không tồn tại trong hệ thống.');
+      }
+
+      return user;
     } catch (error) {
       console.error('Lỗi khi đăng nhập bằng email:', error);
       
-      // Cung cấp thông báo lỗi cụ thể hơn
+      // Nếu lỗi là do tài khoản bị vô hiệu hóa, ưu tiên hiển thị thông báo đó
+      if (error.message.includes('vô hiệu hóa')) {
+          throw new Error(error.message);
+      }
+
+      // Ngược lại, xử lý các lỗi đăng nhập thông thường
       let errorMessage = 'Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.';
       
       if (error.code === 'auth/invalid-credential') {

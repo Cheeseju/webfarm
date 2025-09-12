@@ -98,3 +98,19 @@ body, html {
 .header-login-button:hover {
     background-color: #f0f0f0;
 }
+/*CSS CHO GIAO DIỆN DI ĐỘNG */
+@media (max-width: 768px) {
+    .header {
+        /* Điều chỉnh padding cho gọn hơn */
+        padding: 10px 15px;
+    }
+    
+    .hamburger-menu {
+        display: block; /* Hiện trên mobile */
+    }
+
+    .header .logo {
+        /* Có thể ẩn logo chữ để tiết kiệm không gian */
+        display: none;
+    }
+}

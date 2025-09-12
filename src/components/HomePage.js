@@ -5,10 +5,15 @@ import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
 import authService from '../services/authservices';
 import loginImage from '../assets/login.jpg';
+import { useNotification } from '../context/NotificationContext';
+import QRScanner from './QRScanner';
+import ActivityFeed from './ActivityFeed';
 
 const Homepage = ({ onEnterGuestMode }) => {
     const [mode, setMode] = useState('homepage');
     const [error, setError] = useState(null);
+    const { showNotification } = useNotification();
+    const [showScanner, setShowScanner] = useState(false);
 
     const handleLogin = async (email, password) => {
       try {
@@ -16,7 +21,7 @@ const Homepage = ({ onEnterGuestMode }) => {
         await authService.signInWithEmail(email, password);
       } catch (error) {
         console.error('Lỗi khi đăng nhập:', error);
-        setError(error.message); // Hiển thị thông báo lỗi cho người dùng
+        showNotification(error.message, 'error');
       }
     };
 
@@ -41,7 +46,13 @@ const Homepage = ({ onEnterGuestMode }) => {
         }
     };
 
-
+ const handleScan = (data) => {
+        if (data) {
+            setShowScanner(false);
+            // Chuyển hướng trình duyệt đến URL đã quét được
+            window.location.href = data;
+        }
+    };
     const renderContent = () => {
         if (mode === 'login') {
             return (
@@ -52,7 +63,8 @@ const Homepage = ({ onEnterGuestMode }) => {
                         setError(null);
                     }}
                     onClose={handleCloseAuthForm}
-                    error={error} // Pass error to LoginForm
+                    error={error}
+                   
                 />
             );
         } else if (mode === 'signup') {
@@ -88,7 +100,7 @@ const Homepage = ({ onEnterGuestMode }) => {
                                 <h3>Nhật ký canh tác</h3>
                                 <p>Ghi lại toàn bộ quá trình trồng trọt của bạn một cách dễ dàng.</p>
                             </div>
-                            <div className="feature-card" onClick={() => handleFeatureClick('plants')}>
+                             <div className="feature-card" onClick={() => setShowScanner(true)}>
                                 <h3>Quét mã QR</h3>
                                 <p>Theo dõi nguồn gốc sản phẩm nhanh chóng bằng cách quét mã QR.</p>
                             </div>
@@ -98,6 +110,7 @@ const Homepage = ({ onEnterGuestMode }) => {
                             </div>
                         </div>
                     </div>
+                     <ActivityFeed /> 
                     <footer className="homepage-footer">
                         <div className="footer-content">
                           
@@ -125,6 +138,13 @@ const Homepage = ({ onEnterGuestMode }) => {
     return (
         <div className="homepage-container">
             {renderContent()}
+           {showScanner && (
+                <QRScanner 
+                    onClose={() => setShowScanner(false)} 
+                    onScan={handleScan}
+                />
+            )}
+
         </div>
     );
 };

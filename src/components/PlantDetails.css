@@ -7,9 +7,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-width: 1000px;
     margin: 0 auto;
-
-    /* Thêm các thuộc tính này để giải quyết vấn đề bị che lấp */
-    margin-left: 350px; /* Bằng với chiều rộng của sidebar */
     padding-top: 50px; /* Lớn hơn hoặc bằng chiều cao của header */
 }
 

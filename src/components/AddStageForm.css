@@ -1,53 +1,75 @@
-/* src/components/AddStageForm.css */
+/* src/components/AddStageForm.css (Phiên bản đã dọn dẹp) */
+
+/* ----- Cấu trúc Modal chung ----- */
 .add-stage-form-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
 }
 
 .add-stage-form-container {
   background-color: #ffffff;
-  padding: 30px;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   width: 90%;
   max-width: 500px;
-  position: relative;
+  display: flex; 
+  flex-direction: column;
+  max-height: 90vh; 
 }
 
+/* ----- Header, Body, và Footer của Form ----- */
 .add-stage-form-container h3 {
+  padding: 20px 30px;
+  margin: 0;
+  border-bottom: 1px solid #eee;
   text-align: center;
-  margin-top: 0;
   color: #2e7d32;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  flex-shrink: 0; /* Không co lại */
 }
 
+.form-body-scrollable {
+  padding: 20px 30px;
+  overflow-y: auto; /* Tự động thêm thanh cuộn khi cần */
+}
+
+.form-actions {
+  padding: 20px 30px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0; /* Không co lại */
+}
+
+/* ----- Styling cho các thành phần Form ----- */
 .form-group {
   margin-bottom: 15px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #555;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
 }
 
 .form-group input[type="text"],
 .form-group input[type="number"],
-.form-group textarea,
-.form-group input[type="file"] {
+.form-group textarea {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 6px;
   box-sizing: border-box;
 }
 
@@ -56,29 +78,104 @@
   height: 80px;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+.form-hint {
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+  margin-top: -10px;
+  margin-bottom: 10px;
 }
 
+
+
+/* ----- Styling cho Media (Camera & Upload) ----- */
+.camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #000;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.camera-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.media-preview {
+  margin-bottom: 10px;
+  max-width: 100%;
+}
+
+.media-preview img, 
+.media-preview video {
+  max-width: 100%;
+  height: auto;
+  max-height: 250px;
+  border-radius: 5px;
+}
+
+
+/* Style chung và duy nhất, ghi đè lên mọi style mặc định */
+.media-action-button {
+    -webkit-appearance: none;
+    appearance: none;
+    background: none;
+    margin: 0;
+    font: inherit; 
+    text-transform: none;
+    padding: 12px 5px;
+    border-radius: 6px;
+    border: 1px solid #2e7d32;
+    background-color: #f0f7f0;
+    color: #2e7d32 !important; 
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+    
+    /* ----- Căn chỉnh nội dung BÊN TRONG nút ----- */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+   white-space: nowrap !important;
+}
+
+/* Hiệu ứng khi rê chuột */
+.media-action-button:hover {
+    background-color: #2e7d32;
+    color: #ffffff !important; /* Ghi đè màu chữ khi hover */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+/* ----- Styling cho các nút Lưu/Hủy ----- */
 .form-actions button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.3s ease;
 }
 
 .form-actions button[type="submit"] {
   background-color: #28a745;
   color: white;
-}
-
-.form-actions button[type="submit"]:hover {
-  background-color: #218838;
 }
 
 .form-actions button[type="submit"]:disabled {
@@ -89,13 +186,4 @@
 .form-actions button[type="button"] {
   background-color: #dc3545;
   color: white;
-}
-
-.form-actions button[type="button"]:hover {
-  background-color: #c82333;
-}
-.error-message {
-    color: #dc3545; /* Màu đỏ */
-    font-size: 14px;
-    margin-top: 5px;
 }

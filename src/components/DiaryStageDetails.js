@@ -4,7 +4,7 @@ import DiaryDataService from '../services/diary.services';
 import AddStageForm from './AddStageForm';
 import './DiaryStageDetails.css';
 import QRCode from 'react-qr-code';
-import { db } from '../firebase-config';
+import { db,auth } from '../firebase-config';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNotification } from '../context/NotificationContext'; // <-- 1. Import hook
 
@@ -125,18 +125,26 @@ const DiaryStageDetails = ({ diaryId }) => {
   };
 
   const handleShowQRCode = async () => {
+    const user = auth.currentUser; // Lấy thông tin người dùng hiện tại
+
     try {
       await copyDiaryToPublic();
+      
+      // THÊM LỆNH GHI LOG VÀO ĐÂY
+      if (user) {
+        // Gọi hàm service mới với email và tiêu đề nhật ký
+        await DiaryDataService.logQrCreationActivity(user.email, diaryTitle);
+      }
+      
       const publicUrl = `https://webcaytrong-19dc6.web.app/view-diary/${diaryId}`;
       setQrValue(publicUrl);
       setShowQRCode(true);
       showNotification('Tạo mã QR thành công!', 'success');
     } catch (error) {
       console.error('Lỗi khi tạo QR code:', error);
-      showNotification('Có lỗi xảy ra khi tạo QR code.', 'error'); // <-- 3. Thay thế alert
+      showNotification('Có lỗi xảy ra khi tạo QR code.', 'error');
     }
   };
-
   const handleHideQRCode = () => setShowQRCode(false);
   
   const handleCheckboxChange = (e) => {

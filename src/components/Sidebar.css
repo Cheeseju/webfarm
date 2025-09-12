@@ -1,39 +1,101 @@
 /* src/components/Sidebar.css */
 .sidebar {
   position: fixed;
-  /* Thay đổi top từ 0 thành chiều cao của header */
-  top: 50px; 
+  top: 60px; /* Chiều cao header của bạn có thể là 60px hoặc 50px, hãy điều chỉnh cho khớp */
   left: 0;
-  height: calc(100vh - 60px); /* Điều chỉnh chiều cao để sidebar không vượt quá màn hình */
+  height: calc(100vh - 60px);
   width: 250px; 
   z-index: 999; 
   background-color: #ffffff;
-  padding: 20px;
+  /* Thay đổi padding ở đây để kiểm soát khoảng cách lề chung */
+  padding: 15px; 
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  overflow-y: auto;
+  box-sizing: border-box; /* Thêm dòng này để padding không làm tăng kích thước */
+  transition: width 0.3s ease-in-out;
 }
+/* KHI SIDEBAR BỊ THU GỌN */
+.sidebar.collapsed {
+    width: 80px; /* Chiều rộng mới */
+}
+
+/* Ẩn chữ khi thu gọn */
+.sidebar.collapsed .sidebar-item span {
+    display: none;
+}
+
+/* Căn giữa icon khi thu gọn */
+.sidebar.collapsed .sidebar-item {
+    justify-content: center;
+}
+.sidebar.collapsed .sidebar-item i {
+    margin-right: 0;
+}
+
+/* CSS cho nút thu gọn */
+.sidebar-toggle {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+.sidebar-toggle:hover {
+    background-color: #e0e0e0;
+}
+
+
 .sidebar-item {
     display: flex;
     align-items: center;
-    padding: 15px;
+    padding: 12px 15px; /* Điều chỉnh padding bên trong mỗi mục */
     margin-bottom: 10px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: bold; /* Thêm để chữ đậm hơn */
+    font-weight: 500; /* Có thể giảm độ đậm */
+    color: #333; /* Thêm màu chữ mặc định */
+    transition: background-color 0.2s, color 0.2s;
 }
+
 .sidebar-item:hover, .sidebar-item.active {
     background-color: #e8f5e9;
     color: #2e7d32;
 }
-.sidebar-item .icon {
-    margin-right: 15px;
-    font-size: 24px;
+
+/* Căn chỉnh lại icon */
+.sidebar-item i {
+    font-size: 20px;
+    width: 25px; /* Cho icon một chiều rộng cố định để các dòng thẳng hàng */
+    text-align: center;
+    margin-right: 15px; /* Khoảng cách giữa icon và chữ */
 }
+
 .sidebar-item span {
     font-size: 16px;
-    margin-left: 10px;
-    color: #333;
+    /* Bỏ margin-left vì đã có margin-right từ icon */
 }
-.sidebar-item.active span {
-    color: #2e7d32;
+.sidebar-overlay {
+    display: none; /* Mặc định ẩn trên desktop */
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 2000; 
+        top: 0;
+        height: 100vh;
+        padding-top: 60px; /* Thêm padding top để không bị header che */
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
 }

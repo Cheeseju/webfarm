@@ -5,7 +5,7 @@
   margin: 0 auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
-  margin-left: 300px;
+
 }
 
 .admin-dashboard h1 {
@@ -70,14 +70,7 @@
   color: #7f8c8d;
 }
 
-.error-message {
-  background-color: #ffecec;
-  border: 1px solid #f5aca6;
-  border-radius: 5px;
-  padding: 20px;
-  text-align: center;
-  margin: 20px 0;
-}
+
 
 .error-message p {
   color: #d9534f;
@@ -316,45 +309,22 @@
 .delete-user-btn:hover {
   background-color: #d32f2f;
 }
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
-  .admin-dashboard {
-    padding: 15px;
-    margin-left: 0;
+  .admin-dashboard h1 {
+    font-size: 1.8rem;
   }
-  
-  .admin-tabs {
-    flex-direction: column;
-  }
-  
-  .admin-tabs button {
-    text-align: left;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .admin-tabs button.active::after {
-    display: none;
-  }
-  
-  .stats-summary {
-    grid-template-columns: 1fr;
-  }
-  
-  .farmers-table {
-    display: block;
+
+  .table-container {
+    width: 100%;
     overflow-x: auto;
   }
   
-  .plants-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .user-actions {
-    flex-direction: column;
+  .farmers-table {
+    min-width: 600px; 
   }
   
-  .role-select {
-    width: 100%;
+  .user-actions {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

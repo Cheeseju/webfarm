@@ -161,7 +161,7 @@ const AdminDashboard = () => {
               <p>Tổng số nhật ký</p>
             </div>
           </div>
-          
+          <div className="table-container">
           <table className="farmers-table">
             <thead>
               <tr>
@@ -182,6 +182,7 @@ const AdminDashboard = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

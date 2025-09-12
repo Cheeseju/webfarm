@@ -1,10 +1,10 @@
 // src/services/admin.services.js
-
 import { 
   collection, getDocs, query, where,
   doc, updateDoc, deleteDoc, orderBy
 } from 'firebase/firestore';
 import { db } from '../firebase-config';
+
 
 class AdminDataService {
   getUsersByRole = async (role) => {
@@ -46,7 +46,7 @@ class AdminDataService {
     }
   };
 
-  toggleUserStatus = async (userId, currentStatus) => {
+ toggleUserStatus = async (userId, currentStatus) => {
     try {
       const userRef = doc(db, 'users', userId);
       await updateDoc(userRef, { isDisabled: !currentStatus });
@@ -56,8 +56,7 @@ class AdminDataService {
       throw error;
     }
   };
-
-  deleteUser = async (userId) => {
+deleteUser = async (userId) => {
     try {
       const userRef = doc(db, 'users', userId);
       await deleteDoc(userRef);
@@ -67,7 +66,6 @@ class AdminDataService {
       throw error;
     }
   };
-
   getFarmersStats = async () => {
     try {
       const farmers = await this.getUsersByRole('farmer');
