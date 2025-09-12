@@ -1,0 +1,101 @@
+/* src/components/MyProductsStore.css */
+.my-store-container {
+    padding: 20px;
+    margin-left: 0px;
+    padding-top: 80px;
+}
+.my-store-container h1 {
+    color: #2e7d32;
+}
+.products-table-container {
+    margin-top: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow-x: auto; /* Thêm thanh cuộn ngang nếu bảng quá rộng */
+}
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px; /* Chiều rộng tối thiểu để các cột không bị vỡ */
+}
+.products-table th, .products-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap; /* Ngăn các ô xuống dòng */
+}
+.products-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+.product-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.product-info-cell img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.status-badge.published {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+.status-badge.hidden {
+    background-color: #fbe9e7;
+    color: #c62828;
+}
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+.action-buttons button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.toggle-btn { background-color: #ffc107; }
+.edit-btn { background-color: #17a2b8; color: white; }
+
+.stock-remaining {
+    font-weight: bold;
+    color: #2e7d32;
+}
+.offline-sale-header {
+    min-width: 150px;
+}
+.offline-sale-cell {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.offline-sale-cell input {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.offline-sale-cell button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+}
+.product-info-cell .product-type {
+    display: block;
+    font-size: 0.8rem;
+    color: #777;
+    font-style: italic;
+}

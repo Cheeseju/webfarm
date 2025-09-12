@@ -8,7 +8,8 @@ const Sidebar = ({ onPageChange, currentPage, userRole, isOpen, isCollapsed, onT
     const isPlantsActive = currentPage === 'plants' || currentPage === 'plantDetails';
     const isDiariesActive = currentPage === 'diaries' || currentPage === 'diaryDetails';
     const isAdminActive = currentPage === 'admin';
-    
+    const isMyStoreActive = currentPage === 'myStore'; 
+     const isMarketplaceActive = currentPage === 'marketplace';
     return (
         <div className={`sidebar ${isOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
             <div 
@@ -25,7 +26,15 @@ const Sidebar = ({ onPageChange, currentPage, userRole, isOpen, isCollapsed, onT
                 <i className="plant-icon">🌿</i>
                 <span>Cây trồng</span>
             </div>
-          
+             {userRole === 'farmer' && (
+                <div 
+                  className={`sidebar-item ${isMyStoreActive ? 'active' : ''}`} 
+                  onClick={() => onPageChange('myStore')}
+                >
+                    <i className="store-icon">🏠</i>
+                    <span>Cửa hàng của tôi</span>
+                </div>
+            )}
             {/* Thêm mục Admin nếu người dùng có role admin */}
             {userRole === 'admin' && (
                 <div 
@@ -39,6 +48,15 @@ const Sidebar = ({ onPageChange, currentPage, userRole, isOpen, isCollapsed, onT
             <div className="sidebar-toggle" onClick={onToggleCollapse}>
                 {isCollapsed ? <FaAngleRight /> : <FaAngleLeft />}
             </div>
+            
+                <div 
+                  className={`sidebar-item ${isMarketplaceActive ? 'active' : ''}`} 
+                  onClick={() => onPageChange('marketplace')}
+                >
+                    <i className="market-icon">🛒</i>
+                    <span>Chợ nông sản</span>
+                </div>
+
         </div>
     );
 };

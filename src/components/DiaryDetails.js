@@ -122,7 +122,11 @@ const DiaryDetails = ({ plantId, onBackToList, diaryFilters }) => {
         {displayedDiaries.length > 0 ? (
           displayedDiaries.map((diary) => (
             <div key={diary.id} className="diary-card">
-              <img src={plantInfo.imageUrl} alt={plantInfo.name} className="diary-card-image" />
+              <img 
+    src={plantInfo.imageUrl || 'https://via.placeholder.com/250'} 
+    alt={plantInfo.name} 
+    className="diary-card-image" 
+/>
               <div className="diary-card-content">
                 <p><strong>Tên nhật ký:</strong> {diary.title}</p>
                 <p><strong>Ngày trồng:</strong> {diary.createdAt?.seconds ? new Date(diary.createdAt.seconds * 1000).toLocaleDateString('vi-VN') : 'N/A'}</p>

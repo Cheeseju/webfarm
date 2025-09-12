@@ -126,3 +126,25 @@
   font-size: 14px;
   margin-top: 5px; /* Khoảng cách với checkbox */
 }
+.list-product-button {
+  background-color: #007bff; /* Màu xanh dương */
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  position: fixed;
+  bottom: 20px;
+  /* Điều chỉnh vị trí để không đè lên các nút khác */
+  right: calc(200px + 150px); /* Ví dụ: cách nút QR 150px */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+.list-product-button:hover {
+  background-color: #0056b3;
+}
+.list-product-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

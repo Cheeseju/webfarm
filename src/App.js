@@ -1,9 +1,9 @@
 import './App.css';
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
-import { NotificationProvider } from './context/NotificationContext';
-import { auth } from './firebase-config';
+import { NotificationProvider, useNotification } from './context/NotificationContext';
+import { auth, db } from './firebase-config';
 import authService from './services/authservices';
 import Homepage from './components/HomePage';
 import Sidebar from './components/Sidebar';
@@ -19,6 +19,12 @@ import ViewDiary from './components/ViewDiary';
 import ResetPassword from './components/ResetPassword';
 import DiaryDetails from './components/DiaryDetails';
 import FilterModal from './components/FilterModal';
+import { onSnapshot, doc } from 'firebase/firestore';
+import MyProductsStore from './components/MyProductsStore';
+import ProductListPage from './components/ProductListPage';
+import shoppingService from './services/shopping.services';
+import ProductDetailPage from './components/ProductDetailPage'; // <-- THÊM DÒNG NÀY
+import CartPage from './components/CartPage'; // <-- THÊM DÒNG NÀY
 
 const AppContent = () => {
   const [currentPage, setCurrentPage] = useState('plants');
@@ -34,10 +40,94 @@ const AppContent = () => {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [diaryFilters, setDiaryFilters] = useState(null);
   const [isGuestMode, setIsGuestMode] = useState(false);
+  const [cart, setCart] = useState({ items: [] }); 
+  const { showNotification } = useNotification();
+  const navigate = useNavigate();
+ const [selectedProductId, setSelectedProductId] = useState(null);
+    // Lấy giỏ hàng khi người dùng đăng nhập
+    useEffect(() => {
+        if (user) {
+            const unsubscribe = onSnapshot(doc(db, "carts", user.uid), (doc) => {
+                if (doc.exists()) {
+                    setCart(doc.data());
+                } else {
+                    setCart({ items: [] });
+                }
+            });
+            return () => unsubscribe();
+        } else {
+            setCart({ items: [] }); // Reset giỏ hàng khi đăng xuất
+        }
+    }, [user]);
 
-  // SỬA LỖI 1: THÊM STATE ĐỂ QUẢN LÝ VIỆC THU GỌN SIDEBAR TRÊN DESKTOP
+ const handleAddToCart = async (product, quantity) => {
+    if (!user) {
+        showNotification('Vui lòng đăng nhập để thêm vào giỏ hàng.', 'info');
+        return;
+    }
+    const numQuantity = Number(quantity);
+    if (numQuantity <= 0) {
+        showNotification('Số lượng phải lớn hơn 0.', 'error');
+        return;
+    }
+
+    // Dòng sửa lỗi quan trọng nhất
+    const newCartItems = [...(cart?.items || [])];
+    const itemIndex = newCartItems.findIndex(item => item.productId === product.id);
+
+    if (itemIndex > -1) {
+        newCartItems[itemIndex].quantity += numQuantity;
+    } else {
+        newCartItems.push({
+            productId: product.id,
+           productName: product.productName || product.plantName,
+            price: product.price,
+            unit: product.unit,
+            imageUrl: product.imageUrl,
+            quantity: numQuantity
+        });
+    }
+    try {
+        await shoppingService.updateCart(user.uid, newCartItems);
+        showNotification('Thêm vào giỏ hàng thành công!', 'success');
+    } catch (error) {
+        console.error("Lỗi khi cập nhật giỏ hàng:", error);
+        showNotification('Không thể thêm vào giỏ hàng!', 'error');
+    }
+};
+     // Xử lý thay đổi số lượng trong giỏ hàng
+    const handleUpdateCartQuantity = async (productId, newQuantity) => {
+        const updatedItems = cart.items.map(item => 
+            item.productId === productId ? { ...item, quantity: newQuantity } : item
+        );
+        // Lọc ra những sản phẩm có số lượng lớn hơn 0
+        const finalItems = updatedItems.filter(item => item.quantity > 0);
+        try {
+            await shoppingService.updateCart(user.uid, finalItems);
+        } catch (error) {
+            showNotification('Không thể cập nhật giỏ hàng!', 'error');
+        }
+    };
+
+    // Xóa một sản phẩm khỏi giỏ hàng
+    const handleRemoveFromCart = async (productId) => {
+        const updatedItems = cart.items.filter(item => item.productId !== productId);
+        try {
+            await shoppingService.updateCart(user.uid, updatedItems);
+            showNotification('Đã xóa sản phẩm khỏi giỏ hàng.', 'success');
+        } catch (error) {
+            showNotification('Không thể xóa sản phẩm!', 'error');
+        }
+    };
+    
+  // THÊM STATE ĐỂ QUẢN LÝ VIỆC THU GỌN SIDEBAR TRÊN DESKTOP
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
+  const handleProductCardClick = (productId) => {
+        // Logic để mở trang chi tiết sản phẩm sẽ ở đây
+        console.log("Xem chi tiết sản phẩm ID:", productId);
+        setSelectedProductId(productId);
+         setCurrentPage('productDetail');
+    };
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
@@ -163,6 +253,8 @@ const AppContent = () => {
         showFilterButton={currentPage === 'diaries'}
         onLoginClick={handleGoToLogin}
         onToggleSidebar={toggleSidebar}
+        cartItemCount={cart.items?.length || 0}
+        onPageChange={handlePageChange} 
       />
       <div className="content-area">
         {/* Phần nội dung bên trong giữ nguyên, không thay đổi */}
@@ -229,6 +321,23 @@ const AppContent = () => {
             diaryFilters={diaryFilters}
           />
         )}
+        {currentPage === 'myStore' && userRole === 'farmer' && <MyProductsStore />}
+        {currentPage === 'marketplace' && <ProductListPage onProductSelect={handleProductCardClick} searchQuery={searchQuery} />}
+         {currentPage === 'productDetail' && (
+                <ProductDetailPage 
+                    productId={selectedProductId} 
+                    onBack={() => setCurrentPage('marketplace')}
+                    onAddToCart={handleAddToCart}
+                    onViewDiary={(diaryId) => navigate(`/view-diary/${diaryId}`)}
+                />
+            )}
+            {currentPage === 'cart' && (
+                    <CartPage 
+                        cart={cart}
+                        onUpdateQuantity={handleUpdateCartQuantity}
+                        onRemoveItem={handleRemoveFromCart}
+                    />
+                )}
       </div>
     </div>
   );

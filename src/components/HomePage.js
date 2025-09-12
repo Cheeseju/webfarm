@@ -104,10 +104,10 @@ const Homepage = ({ onEnterGuestMode }) => {
                                 <h3>Quét mã QR</h3>
                                 <p>Theo dõi nguồn gốc sản phẩm nhanh chóng bằng cách quét mã QR.</p>
                             </div>
-                            <div className="feature-card">
+                            <div className="feature-card" onClick={() => handleFeatureClick('marketplace')}> 
                                 <h3>Mua sắm</h3>
                                 <p>Khám phá và mua các sản phẩm nông nghiệp chất lượng cao.</p>
-                            </div>
+                             </div>
                         </div>
                     </div>
                      <ActivityFeed /> 

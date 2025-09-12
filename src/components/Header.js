@@ -1,8 +1,9 @@
 import React from 'react';
 import './Header.css';
 import { FaSearch, FaFilter, FaSignOutAlt } from 'react-icons/fa';
+import { FaShoppingCart } from 'react-icons/fa'; 
 
-const Header = ({ onSearch, searchQuery, user, onLogout, userRole, onFilterClick, showFilterButton , onLoginClick}) => {
+const Header = ({ onSearch, searchQuery, user, onLogout, userRole, onFilterClick, showFilterButton , onLoginClick, cartItemCount, onPageChange }) => {
     return (
         <header className="header">
             <div className="logo">
@@ -19,6 +20,10 @@ const Header = ({ onSearch, searchQuery, user, onLogout, userRole, onFilterClick
                     />
                 </div>
             </div>
+             <div className="cart-icon-container" onClick={() => onPageChange('cart')}>
+                            <FaShoppingCart />
+                            {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
+                        </div>
             <div className="header-right">
                 {user ? (
                     <>

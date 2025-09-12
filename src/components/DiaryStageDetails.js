@@ -7,7 +7,9 @@ import QRCode from 'react-qr-code';
 import { db,auth } from '../firebase-config';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNotification } from '../context/NotificationContext'; // <-- 1. Import hook
-
+import PlantDataService from '../services/plant.services';   
+import shoppingService from '../services/shopping.services';
+import ConfirmPriceForm from './ConfirmPriceForm'; 
 const DiaryStageDetails = ({ diaryId }) => {
   const { showNotification } = useNotification(); // <-- 2. Lấy hàm showNotification
   const [showQRCode, setShowQRCode] = useState(false);
@@ -16,43 +18,92 @@ const DiaryStageDetails = ({ diaryId }) => {
   const [showAddStageForm, setShowAddStageForm] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [status, setStatus] = useState("Đang canh tác");
-  const [showWarning, setShowWarning] = useState(false); 
   const [latestPlantCount, setLatestPlantCount] = useState(null); 
   const [qrValue, setQrValue] = useState('');
-
-  const updateCompletionStatus = async (isCompleted) => {
-    const newStatus = isCompleted ? "Đã hoàn thành" : "Đang canh tác";
-    const updatedFields = {
-      isCompleted: isCompleted,
-      status: newStatus
-    };
-
-    if (isCompleted) {
-      updatedFields.endDate = new Date();
-    } else {
-      updatedFields.endDate = null;
+ const [isInventoried, setIsInventoried] = useState(false);
+    const [showPriceForm, setShowPriceForm] = useState(false); // <-- State mới để mở form giá
+    const [dataForPricing, setDataForPricing] = useState(null); 
+    
+    
+const handleCompletionToggle = async (newCompletionStatus) => {
+    if (stages.length === 0 && newCompletionStatus) {
+        showNotification('Không thể hoàn thành nhật ký chưa có giai đoạn nào.', 'error');
+        return;
     }
 
     try {
-      await DiaryDataService.updateDiary(diaryId, updatedFields);
-      setIsCompleted(isCompleted);
-      setStatus(newStatus);
-      showNotification('Cập nhật trạng thái nhật ký thành công!', 'success');
-    } catch (err) {
-      console.error("Lỗi khi cập nhật trạng thái:", err.message);
-      showNotification('Lỗi khi cập nhật trạng thái!', 'error');
-    }
-  };
+        const diaryDoc = await DiaryDataService.getDiary(diaryId);
+        if (!diaryDoc.exists()) {
+            showNotification('Không tìm thấy nhật ký này.', 'error');
+            return;
+        }
 
-  const syncStageToPublic = async (stageId, stageData) => {
-    try {
-      const publicStageRef = doc(db, 'publicDiaries', diaryId, 'publicStages', stageId);
-      await setDoc(publicStageRef, stageData);
+        const plantId = diaryDoc.data().plantId;
+
+        // BƯỚC KIỂM TRA QUAN TRỌNG ĐƯỢC THÊM VÀO
+        if (!plantId) {
+            showNotification('Nhật ký này không được liên kết với cây trồng nào. Không thể cập nhật kho.', 'error');
+            console.error("Lỗi dữ liệu: Nhật ký không có plantId. Diary ID:", diaryId);
+            return;
+        }
+
+        const plantDoc = await PlantDataService.getPlant(plantId);
+        if (!plantDoc.exists()) {
+            showNotification('Không tìm thấy cây trồng được liên kết với nhật ký này.', 'error');
+            return;
+        }
+        
+        const plantData = { id: plantDoc.id, ...plantDoc.data() };
+        
+        if (!newCompletionStatus) {
+            await processInventoryUpdate(false, plantData, { id: diaryDoc.id, ...diaryDoc.data() });
+        } else {
+              const user = auth.currentUser;
+    if (!user) {
+        showNotification('Không thể xác thực người dùng, vui lòng thử lại.', 'error');
+        return;
+    }
+    // Sửa lại thành dòng này, dùng hàm mới
+    const productAlreadyExists = await shoppingService.productExistsForFarmer(plantData.id, user.uid);
+            if (productAlreadyExists) {
+                await processInventoryUpdate(true, plantData, { id: diaryDoc.id, ...diaryDoc.data() });
+            } else {
+                setDataForPricing({ plant: plantData, diary: { id: diaryDoc.id, ...diaryDoc.data() } });
+                setShowPriceForm(true);
+            }
+        }
     } catch (error) {
-      console.error('Lỗi khi đồng bộ stage:', error);
+        showNotification('Có lỗi xảy ra, vui lòng thử lại.', 'error');
+        console.error("Lỗi trong handleCompletionToggle:", error);
     }
-  };
+};
+    // HÀM XỬ LÝ CẬP NHẬT KHO: được gọi tự động hoặc từ form giá
+    const processInventoryUpdate = async (isAdding, plantData, diaryData, priceInfo = null) => {
+        try {
+            // Nếu không có priceInfo (trường hợp tự động), dùng giá mặc định của cây
+            const finalPriceInfo = priceInfo || { price: plantData.price, unit: plantData.unit || 'cây' };
 
+            await shoppingService.updateInventoryFromDiary(plantData, diaryData, latestPlantCount, isAdding, finalPriceInfo);
+            
+            const newStatus = isAdding ? "Đã hoàn thành" : "Đang canh tác";
+            await DiaryDataService.updateDiary(diaryId, {
+                isCompleted: isAdding,
+                status: newStatus,
+                endDate: isAdding ? new Date() : null,
+                isInventoried: isAdding
+            });
+            
+            setIsCompleted(isAdding);
+            setIsInventoried(isAdding);
+            setStatus(newStatus);
+            setShowPriceForm(false); // Đóng form giá nếu nó đang mở
+            showNotification('Cập nhật trạng thái và kho hàng thành công!', 'success');
+        } catch (error) {
+            console.error("Lỗi khi cập nhật kho:", error);
+            showNotification('Có lỗi xảy ra, vui lòng thử lại.', 'error');
+        }
+    };
+  
   const copyDiaryToPublic = async () => {
     try {
       const diaryDoc = await DiaryDataService.getDiary(diaryId);
@@ -108,6 +159,7 @@ const DiaryStageDetails = ({ diaryId }) => {
           setDiaryTitle(data.title);
           setIsCompleted(data.isCompleted || false);
           setStatus(data.status || "Đang canh tác");
+          setIsInventoried(data.isInventoried || false);
         }
       } catch (err) {
         console.error("Lỗi khi lấy dữ liệu nhật ký:", err.message);
@@ -147,15 +199,7 @@ const DiaryStageDetails = ({ diaryId }) => {
   };
   const handleHideQRCode = () => setShowQRCode(false);
   
-  const handleCheckboxChange = (e) => {
-    if (stages.length === 0 && e.target.checked) {
-      setShowWarning(true);
-      e.target.checked = false; // Ngăn không cho tick
-      return;
-    }
-    setShowWarning(false); 
-    updateCompletionStatus(e.target.checked);
-  };
+
 
   return (
     <div className="diary-stage-details">
@@ -202,23 +246,24 @@ const DiaryStageDetails = ({ diaryId }) => {
         </table>
       </div>
 
-      <div className="status-and-completion">
-        <p><strong>Trạng thái:</strong> {status}</p>
-        <div className="completion-checkbox">
-          <input
-            type="checkbox"
-            id="isCompleted"
-            checked={isCompleted}
-            onChange={handleCheckboxChange}
-          />
-          <label htmlFor="isCompleted">Đã hoàn thành nhật ký</label>
-        </div>
-        {showWarning && (
-          <p className="warning-message">
-            ⚠️ Không thể đánh dấu hoàn thành khi chưa có giai đoạn nào.
-          </p>
-        )}
-      </div>
+             <div className="status-and-completion">
+                <p><strong>Trạng thái:</strong> {status}</p>
+                <div className="completion-checkbox">
+                    <input
+                        type="checkbox"
+                        id="isCompleted"
+                        checked={isCompleted}
+                            onChange={(e) => handleCompletionToggle(e.target.checked)}
+                    />
+                    <label htmlFor="isCompleted">Đã hoàn thành nhật ký</label>
+                </div>
+                {isInventoried && <p className="inventory-status">✔️ Đã cập nhật vào kho hàng.</p>}
+                 {stages.length === 0 && (
+                    <p className="warning-message">
+                        ⚠️ Không thể đánh dấu hoàn thành khi chưa có giai đoạn nào.
+                    </p>
+                )}
+            </div>
       
       <button 
         onClick={handleAddStageClick} 
@@ -253,9 +298,18 @@ const DiaryStageDetails = ({ diaryId }) => {
           onSave={handleCloseForm}
           onCancel={handleCloseForm}
           latestPlantCount={latestPlantCount}
-          onSyncStage={syncStageToPublic}
+    
         />
       )}
+       {showPriceForm && (
+                <ConfirmPriceForm 
+                    data={dataForPricing}
+                    onClose={() => setShowPriceForm(false)}
+                    onConfirm={(priceInfo) => {
+                          processInventoryUpdate(true, dataForPricing.plant, dataForPricing.diary, priceInfo);
+                    }}
+                />
+            )}
     </div>
   );
 };

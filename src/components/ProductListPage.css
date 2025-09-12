@@ -1,0 +1,17 @@
+/* src/components/ProductListPage.css */
+.product-list-page {
+    padding: 20px;
+    padding-top: 70px;
+}
+.product-list-page h1 {
+    color: #2e7d32;
+}
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+.product-grid > div {
+    cursor: pointer; /* Thêm con trỏ cho toàn bộ card */
+}

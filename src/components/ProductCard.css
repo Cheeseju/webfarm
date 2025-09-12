@@ -1,0 +1,74 @@
+/* src/components/ProductCard.css (Phiên bản đã sửa lỗi) */
+
+.product-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    height: 100%; /* QUAN TRỌNG: Đảm bảo card lấp đầy không gian của grid row */
+    
+    /* Thiết lập Flexbox cho card */
+    display: flex;
+    flex-direction: column; 
+    
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.product-card-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    flex-shrink: 0; /* Ngăn ảnh bị co lại */
+}
+
+.product-card-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* QUAN TRỌNG: Cho phép phần nội dung này co giãn để lấp đầy không gian thừa */
+}
+
+.product-card-name {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: #333;
+    /* Đảm bảo chiều cao tối thiểu cho tên sản phẩm để tránh nhảy layout */
+    min-height: 48px; 
+}
+
+.product-card-farmer {
+    margin: 0 0 15px 0;
+    font-size: 0.8rem;
+    color: #777;
+    font-style: italic;
+}
+
+.product-card-footer {
+    margin-top: auto; /* QUAN TRỌNG: Tự động đẩy phần footer này xuống dưới cùng */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 10px;
+}
+
+.product-card-price {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.product-card-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
